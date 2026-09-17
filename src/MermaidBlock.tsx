@@ -1,50 +1,70 @@
 import { useEffect, useRef, useState } from 'react';
 import mermaid from 'mermaid';
 
-let mermaidCounter = 0;
-
-function nextId() {
-  mermaidCounter += 1;
-  return `mdv-mermaid-${mermaidCounter}`;
-}
-
 type Props = {
   chart: string;
   dark: boolean;
 };
 
+let renderCounter = 0;
+
+function createRenderId() {
+  renderCounter += 1;
+  return `mdv-mermaid-${Date.now()}-${renderCounter}`;
+}
+
 export default function MermaidBlock({ chart, dark }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const idRef = useRef(nextId());
   const [error, setError] = useState<string | null>(null);
+  const [rendering, setRendering] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    const container = containerRef.current;
+    const source = chart.trim();
+    const renderId = createRenderId();
+
+    if (container) container.replaceChildren();
+    setError(null);
+    setRendering(true);
 
     const renderDiagram = async () => {
-      setError(null);
       try {
         mermaid.initialize({
           startOnLoad: false,
           securityLevel: 'strict',
           theme: dark ? 'dark' : 'default',
-          flowchart: { htmlLabels: true, useMaxWidth: true },
+          flowchart: {
+            htmlLabels: true,
+            useMaxWidth: true,
+            curve: 'basis',
+          },
         });
 
-        const { svg, bindFunctions } = await mermaid.render(idRef.current, chart.trim());
+        const result = await mermaid.render(renderId, source);
         if (cancelled || !containerRef.current) return;
 
-        containerRef.current.innerHTML = svg;
-        bindFunctions?.(containerRef.current);
+        containerRef.current.replaceChildren();
+        containerRef.current.insertAdjacentHTML('afterbegin', result.svg);
+        result.bindFunctions?.(containerRef.current);
+        setRendering(false);
       } catch (err) {
         if (cancelled) return;
+        if (containerRef.current) containerRef.current.replaceChildren();
+        setRendering(false);
         setError(err instanceof Error ? err.message : String(err));
       }
     };
 
-    void renderDiagram();
+    if (source) void renderDiagram();
+    else {
+      setRendering(false);
+      setError('The Mermaid code block is empty.');
+    }
+
     return () => {
       cancelled = true;
+      if (container) container.replaceChildren();
     };
   }, [chart, dark]);
 
@@ -61,5 +81,9 @@ export default function MermaidBlock({ chart, dark }: Props) {
     );
   }
 
-  return <div ref={containerRef} className="mermaid-diagram" role="img" aria-label="Mermaid diagram" />;
+  return (
+    <div className={`mermaid-diagram${rendering ? ' rendering' : ''}`} ref={containerRef} role="img" aria-label="Mermaid diagram">
+      {rendering && <span className="mermaid-loading">Rendering diagram…</span>}
+    </div>
+  );
 }
