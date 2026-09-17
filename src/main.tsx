@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Code2, FileText, FolderOpen, Image, List, ListOrdered, Moon, Plus, Quote, Search, Settings, Sun, Table, Type, Undo2, Redo2, Bold, Italic, Link, Save, Eye, Columns3, X, ChevronDown, FilePlus2, CheckSquare, MoreHorizontal, Maximize2 } from 'lucide-react';
+import { Code2, FileText, FolderOpen, Image, List, ListOrdered, Moon, Plus, Quote, Search, Settings, Sun, Table, Type, Undo2, Bold, Italic, Link, Save, Columns3, X, ChevronDown, FilePlus2, CheckSquare, MoreHorizontal, Maximize2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import CodeMirror from '@uiw/react-codemirror';
@@ -11,8 +10,6 @@ import './styles.css';
 const initialMarkdown = `# Markdown Viewer
 
 A simple, fast and beautiful desktop application to **read and edit Markdown files offline**.
-
-![Landscape](https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1100&q=80)
 
 ## Features
 
@@ -58,25 +55,19 @@ console.log(greet('Markdown Viewer'));
 
 > Everything stays on your computer. No internet is required.\n`;
 
-const files = [
-  { name: 'README.md', kind: 'file' },
-  { name: 'installation.md', kind: 'file' },
-  { name: 'usage.md', kind: 'file' },
-  { name: 'features.md', kind: 'file' },
-];
+const files = ['README.md', 'installation.md', 'usage.md', 'features.md'];
 
 function App() {
   const [content, setContent] = useState(initialMarkdown);
   const [mode, setMode] = useState<'edit' | 'preview' | 'split'>('split');
   const [dark, setDark] = useState(true);
   const [sidebar, setSidebar] = useState(true);
-  const [rightPanel, setRightPanel] = useState(true);
   const [search, setSearch] = useState('');
   const [fontScale, setFontScale] = useState(1);
 
-  const headings = useMemo(() =>
-    content.split('\n').filter((line) => /^#{1,3}\s/.test(line)).map((line) => line.replace(/^#{1,3}\s/, '')),
-    [content]
+  const headings = useMemo(
+    () => content.split('\n').filter((line) => /^#{1,3}\s/.test(line)).map((line) => line.replace(/^#{1,3}\s/, '')),
+    [content],
   );
 
   const insert = (before: string, after = '', placeholder = 'text') => {
@@ -111,7 +102,7 @@ function App() {
           </div>
           <div className="section-title">Files</div>
           <div className="tree-root"><FolderOpen size={16}/> Documentation <ChevronDown size={15}/></div>
-          {files.map((file, i) => <button key={file.name} className={i === 0 ? 'tree-file selected' : 'tree-file'}><FileText size={16}/>{file.name}</button>)}
+          {files.map((name, i) => <button key={name} className={i === 0 ? 'tree-file selected' : 'tree-file'}><FileText size={16}/>{name}</button>)}
           <div className="tree-root"><FolderOpen size={16}/> Guides <ChevronDown size={15}/></div>
           <button className="tree-file"><FileText size={16}/> getting-started.md</button>
           <button className="tree-file"><FileText size={16}/> keyboard-shortcuts.md</button>
@@ -147,22 +138,18 @@ function App() {
 
           <div className="document-area" style={{ fontSize: `${fontScale}em` }}>
             {(mode === 'edit' || mode === 'split') && <section className={mode === 'split' ? 'editor-pane split' : 'editor-pane full'}>
-              <CodeMirror value={content} height="calc(100vh - 178px)" theme={dark ? oneDark : undefined} extensions={[markdown()]} onChange={setContent} basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }} />
+              <CodeMirror value={content} height="100%" theme={dark ? oneDark : undefined} extensions={[markdown()]} onChange={setContent} basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }} />
             </section>}
             {(mode === 'preview' || mode === 'split') && <section className={mode === 'split' ? 'preview-pane split' : 'preview-pane full'}>
-              <article className="markdown" style={{ fontSize: `${fontScale}em` }}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
-              </article>
+              <article className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown></article>
             </section>}
           </div>
           <div className="statusbar"><span>Ln 1, Col 1</span><span>Markdown</span><span>UTF-8</span><span>Spaces: 2</span><span className="status-spacer"/><span>Live Preview</span><span className="toggle on"/><button className="icon-btn tiny"><Maximize2 size={15}/></button></div>
         </main>
 
-        {rightPanel && <aside className="right-sidebar">
+        <aside className="right-sidebar">
           <div className="right-tabs"><button className="active">Table of Contents</button><button>Search</button></div>
-          <div className="toc">
-            {headings.map((h, i) => <div key={`${h}-${i}`} className={i === 0 ? 'toc-item root' : 'toc-item'}>{h}</div>)}
-          </div>
+          <div className="toc">{headings.map((h, i) => <div key={`${h}-${i}`} className={i === 0 ? 'toc-item root' : 'toc-item'}>{h}</div>)}</div>
           <div className="file-info">
             <div className="section-title">File Info</div>
             <div className="info-row"><FileText size={15}/><span>Name</span><b>README.md</b></div>
@@ -171,7 +158,7 @@ function App() {
             <div className="info-row"><Undo2 size={15}/><span>Modified</span><b>Today, 3:45 PM</b></div>
             <div className="info-row"><FilePlus2 size={15}/><span>Type</span><b>Markdown File</b></div>
           </div>
-        </aside>}
+        </aside>
       </div>
       <div className="quick-controls"><button onClick={() => setFontScale((v) => Math.max(.85, v-.05))}>A−</button><span>{Math.round(fontScale * 100)}%</span><button onClick={() => setFontScale((v) => Math.min(1.35, v+.05))}>A+</button></div>
     </div>
