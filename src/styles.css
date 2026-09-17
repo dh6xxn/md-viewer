@@ -80,8 +80,10 @@ button { border: 0; color: inherit; cursor: pointer; }
 .markdown th,.markdown td { border:1px solid #2a3440; padding:9px 12px; text-align:left; }
 .markdown th { background:#151d26; color:#eef3f9; }
 .markdown li { margin:6px 0; }
-.mermaid-diagram { width:100%; margin:22px 0; padding:20px; border:1px solid #27313d; border-radius:12px; background:#0d141c; overflow:auto; display:flex; justify-content:center; }
-.mermaid-diagram svg { max-width:100%; height:auto; }
+.mermaid-diagram { width:100%; min-height:70px; margin:22px 0; padding:20px; border:1px solid #27313d; border-radius:12px; background:#0d141c; overflow:auto; display:flex; justify-content:center; align-items:center; }
+.mermaid-diagram svg { max-width:100%; height:auto; display:block; }
+.mermaid-diagram.rendering { color:#7f8da0; }
+.mermaid-loading { font-size:12px; padding:10px; }
 .light .mermaid-diagram { background:#fff; border-color:#dbe2eb; }
 .mermaid-error { margin:22px 0; padding:16px; border:1px solid #7f2f3a; border-radius:10px; background:#211318; color:#f0c7ce; }
 .mermaid-error-title { font-weight:600; margin-bottom:10px; }
