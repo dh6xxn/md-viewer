@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import { Code2, FileText, FolderOpen, Image, List, ListOrdered, Moon, Plus, Quote, Search, Settings, Sun, Table, Type, Undo2, Bold, Italic, Link, Save, Columns3, X, ChevronDown, FilePlus2, CheckSquare, MoreHorizontal, Maximize2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
