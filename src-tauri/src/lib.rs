@@ -12,15 +12,23 @@ fn read_markdown(path: String) -> Result<String, String> {
 
 #[tauri::command]
 fn write_markdown(path: String, content: String) -> Result<(), String> {
-  fs::write(Path::new(&path), content).map_err(|e| format!("Could not save file: {e}"))
+  let path = Path::new(&path);
+  if let Some(parent) = path.parent() {
+    fs::create_dir_all(parent).map_err(|e| format!("Could not create folder: {e}"))?;
+  }
+  fs::write(path, content).map_err(|e| format!("Could not save file: {e}"))
 }
 
 #[tauri::command]
-fn create_markdown(path: String) -> Result<(), String> {
-  if Path::new(&path).exists() {
+fn create_markdown(path: String, content: String) -> Result<(), String> {
+  let path = Path::new(&path);
+  if path.exists() {
     return Err("A file already exists at that location.".into());
   }
-  fs::write(Path::new(&path), "# New Markdown File\n\n").map_err(|e| format!("Could not create file: {e}"))
+  if let Some(parent) = path.parent() {
+    fs::create_dir_all(parent).map_err(|e| format!("Could not create folder: {e}"))?;
+  }
+  fs::write(path, content).map_err(|e| format!("Could not create file: {e}"))
 }
 
 #[tauri::command]
@@ -37,7 +45,10 @@ fn list_markdown_files(folder: String) -> Result<Vec<String>, String> {
       let path = entry.path();
       if path.is_dir() {
         visit(&path, files)?;
-      } else if matches!(path.extension().and_then(|e| e.to_str()), Some("md") | Some("markdown")) {
+      } else if matches!(
+        path.extension().and_then(|e| e.to_str()).map(|e| e.to_ascii_lowercase()).as_deref(),
+        Some("md") | Some("markdown")
+      ) {
         files.push(path.to_string_lossy().into_owned());
       }
     }
@@ -45,7 +56,7 @@ fn list_markdown_files(folder: String) -> Result<Vec<String>, String> {
   }
 
   visit(root, &mut files).map_err(|e| format!("Could not read folder: {e}"))?;
-  files.sort();
+  files.sort_by_key(|p| p.to_lowercase());
   Ok(files)
 }
 
