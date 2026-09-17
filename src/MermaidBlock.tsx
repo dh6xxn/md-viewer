@@ -27,9 +27,7 @@ function renderQueued(source: string, dark: boolean, renderId: string) {
       },
     });
 
-    // Validate first. This also prevents a malformed diagram from poisoning
-    // the following diagrams in a large Markdown document.
-    await mermaid.parse(source, { suppressErrors: false });
+    await mermaid.parse(source);
     return mermaid.render(renderId, source);
   });
 
@@ -38,17 +36,20 @@ function renderQueued(source: string, dark: boolean, renderId: string) {
 }
 
 export default function MermaidBlock({ chart, dark }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  // React owns the outer elements. Mermaid is allowed to mutate only this
+  // dedicated inner element, preventing React/Mermaid DOM reconciliation
+  // conflicts that can blank the entire preview.
+  const svgRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [rendering, setRendering] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    const container = containerRef.current;
+    const target = svgRef.current;
     const source = chart.trim();
     const renderId = createRenderId();
 
-    if (container) container.replaceChildren();
+    if (target) target.innerHTML = '';
     setError(null);
     setRendering(true);
 
@@ -60,46 +61,45 @@ export default function MermaidBlock({ chart, dark }: Props) {
 
     void renderQueued(source, dark, renderId)
       .then(({ svg }) => {
-        if (cancelled || !containerRef.current) return;
-        containerRef.current.replaceChildren();
-        containerRef.current.insertAdjacentHTML('afterbegin', svg);
+        if (cancelled || !svgRef.current) return;
+        svgRef.current.innerHTML = svg;
         setRendering(false);
       })
       .catch((err) => {
         if (cancelled) return;
-        if (containerRef.current) containerRef.current.replaceChildren();
+        if (svgRef.current) svgRef.current.innerHTML = '';
         setRendering(false);
         setError(err instanceof Error ? err.message : String(err));
       });
 
     return () => {
       cancelled = true;
-      if (container) container.replaceChildren();
+      if (target) target.innerHTML = '';
     };
   }, [chart, dark]);
-
-  if (error) {
-    return (
-      <div className="mermaid-error">
-        <div className="mermaid-error-title">Mermaid diagram could not be rendered</div>
-        <pre>{error}</pre>
-        <details>
-          <summary>Show Mermaid source</summary>
-          <pre>{chart}</pre>
-        </details>
-      </div>
-    );
-  }
 
   return (
     <div
       className={`mermaid-diagram${rendering ? ' rendering' : ''}`}
-      ref={containerRef}
       role="img"
       aria-label="Mermaid diagram"
       aria-busy={rendering}
     >
-      {rendering && <span className="mermaid-loading">Rendering diagram…</span>}
+      {error ? (
+        <div className="mermaid-error">
+          <div className="mermaid-error-title">Mermaid diagram could not be rendered</div>
+          <pre>{error}</pre>
+          <details>
+            <summary>Show Mermaid source</summary>
+            <pre>{chart}</pre>
+          </details>
+        </div>
+      ) : (
+        <>
+          {rendering && <span className="mermaid-loading">Rendering diagram…</span>}
+          <div ref={svgRef} className="mermaid-svg-container" />
+        </>
+      )}
     </div>
   );
 }
