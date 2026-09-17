@@ -26,6 +26,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "app", "dmg", "appimage"]
+    "targets": ["nsis", "app", "dmg", "appimage"],
+    "icon": []
   }
 }
