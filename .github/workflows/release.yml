@@ -1,0 +1,45 @@
+name: Build Desktop Releases
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            args: '--bundles nsis'
+          - platform: macos-latest
+            args: '--bundles app,dmg'
+          - platform: ubuntu-22.04
+            args: '--bundles appimage'
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Install dependencies
+        run: npm install
+      - name: Build desktop bundle
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
+          releaseName: Markdown Viewer ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'dev' }}
+          releaseBody: Offline desktop Markdown viewer and editor.
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}
