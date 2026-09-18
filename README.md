@@ -1,45 +1,60 @@
-# Markdown Viewer
+# 📝 Markdown Viewer
 
-A lightweight, offline-first Markdown viewer and editor built as a desktop application with Tauri, React, and TypeScript.
+A lightweight, offline-first Markdown viewer and editor built as a desktop application with **Tauri**, **React**, and **TypeScript**.
 
-## Features
+![Windows](https://img.shields.io/badge/Windows-NSIS-0078D6?logo=windows&logoColor=white)
+![macOS](https://img.shields.io/badge/macOS-.app%20%2F%20.dmg-000000?logo=apple&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-AppImage-FCC624?logo=linux&logoColor=black)
+![Status](https://img.shields.io/badge/status-active%20development-yellow)
+![License](https://img.shields.io/badge/license-unspecified-lightgrey)
 
-- Open and view local Markdown files
-- Open a folder and navigate Markdown files from the sidebar
-- Edit Markdown with a dedicated editor
-- Preview rendered Markdown
-- Split editor / preview mode
-- Create new Markdown documents
-- Save Markdown files locally
-- Light and dark themes
-- Search files in the current workspace
-- Table of contents navigation
-- Word and line counts
-- Mermaid diagram rendering
-- Local/offline operation — no internet connection is required for normal use
+---
 
-## Desktop Builds
+## ✨ Features
 
-GitHub Actions builds the application for:
+| | |
+|---|---|
+| 📂 **File & folder browsing** | Open local Markdown files or an entire folder, and navigate documents from the sidebar |
+| ✍️ **Editing** | Full-featured Markdown editing with a dedicated editor pane |
+| 👁️ **Live preview** | Rendered Markdown preview alongside your source |
+| 🔀 **Split view** | Edit and preview side by side |
+| 🆕 **New documents** | Create new Markdown files from scratch |
+| 💾 **Local save** | Save files directly back to disk |
+| 🌗 **Light & dark themes** | Comfortable viewing in any environment |
+| 🔍 **Workspace search** | Search across files in the current workspace |
+| 📑 **Table of contents** | Jump to headings with generated TOC navigation |
+| 🔢 **Word & line counts** | Quick document stats at a glance |
+| 🧩 **Mermaid diagrams** | Render diagrams directly inside your Markdown |
+| ✈️ **Offline-first** | No internet connection required for normal use |
 
-- **Windows** — NSIS installer
-- **macOS** — `.app` / `.dmg`
-- **Linux** — AppImage
+---
 
-Build artifacts are uploaded to the corresponding GitHub Actions workflow run.
+## 🖥️ Desktop Builds
 
-## Tech Stack
+GitHub Actions builds the application for each major platform, with artifacts uploaded to the corresponding workflow run:
 
-- **React** + **TypeScript**
-- **Vite**
-- **Tauri**
-- **Tailwind CSS**
-- **CodeMirror** for editing
-- **react-markdown** for Markdown rendering
-- **Mermaid** for diagrams
-- **Lucide React** for icons
+| Platform | Output |
+|---|---|
+| 🪟 Windows | NSIS installer |
+| 🍎 macOS | `.app` / `.dmg` |
+| 🐧 Linux | AppImage |
 
-## Project Structure
+---
+
+## 🛠️ Tech Stack
+
+- **React** + **TypeScript** — UI framework
+- **Vite** — build tooling
+- **Tauri** — desktop application shell
+- **Tailwind CSS** — styling
+- **CodeMirror** — text editing
+- **react-markdown** — Markdown rendering
+- **Mermaid** — diagram rendering
+- **Lucide React** — icons
+
+---
+
+## 📁 Project Structure
 
 ```text
 md-viewer/
@@ -56,14 +71,16 @@ md-viewer/
 └── README.md
 ```
 
-## Development
+---
+
+## 🚀 Development
 
 ### Requirements
 
 - Node.js
 - npm
 - Rust and Cargo
-- Tauri prerequisites for your operating system
+- [Tauri prerequisites](https://tauri.app/start/prerequisites/) for your operating system
 
 ### Install dependencies
 
@@ -89,18 +106,32 @@ npm run tauri build
 npm run build
 ```
 
-## Offline Design
+---
 
-Markdown Viewer is designed to work with files stored on the user's computer. Markdown rendering, editing, and Mermaid rendering are bundled into the application, so normal document viewing and editing do not depend on a web service or an internet connection.
+## 🔌 Offline Design
 
-## GitHub Actions
+Markdown Viewer is built to work entirely with files stored on your computer. Markdown rendering, editing, and Mermaid rendering are bundled into the application itself, so normal document viewing and editing never depend on a web service or an internet connection.
 
-The repository contains workflows for building the desktop application on Windows, macOS, and Linux. The workflows install the required dependencies, generate application icons, build the Tauri application, verify the generated bundles, and upload the resulting desktop packages as workflow artifacts.
+---
 
-## Status
+## ⚙️ GitHub Actions
 
-Markdown Viewer is under active development. Core viewing, editing, preview, split view, local file handling, and desktop packaging are being developed together.
+The repository includes workflows for building the desktop application on Windows, macOS, and Linux. Each workflow:
 
-## License
+1. Installs required dependencies
+2. Generates application icons
+3. Builds the Tauri application
+4. Verifies the generated bundles
+5. Uploads the resulting desktop packages as workflow artifacts
+
+---
+
+## 📌 Status
+
+Markdown Viewer is under **active development**. Core viewing, editing, preview, split view, local file handling, and desktop packaging are all being developed together.
+
+---
+
+## 📄 License
 
 No license has currently been specified for this repository.
